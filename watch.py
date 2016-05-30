@@ -75,7 +75,7 @@ def get_availability(server):
         data = ping.get_metric_data_points(m.name, start, end, resolution='FULL')
         points.extend([p['average'] for p in data])
     if not points:
-        log.warning("No points for %s" % server.name)
+        log.warning("No data for %s" % server.name)
         return
     # return mean of our sample
     try:
@@ -89,7 +89,7 @@ def check_ping(server):
     
     If availability is below a threshold, reboot the server
     """
-    log.info("Checking ping for server %s", server.name)
+    log.info("Checking ping for %s", server.name)
     avail = get_availability(server)
     if avail is None:
         return
