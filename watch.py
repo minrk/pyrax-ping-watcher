@@ -53,7 +53,7 @@ def find_ping(server):
     
     pings = [ check for check in cm.list_checks(entity) if check.type == 'remote.ping' ]
     if not pings:
-        log.debug("No pings for %s", server.name)
+        log.warning("No pings for %s", server.name)
         # create new ping
         create_ping_check(server, entity)
         # don't return ping that won't have any data yet
@@ -89,7 +89,7 @@ def check_ping(server):
     
     If availability is below a threshold, reboot the server
     """
-    log.info("Checking ping for %s", server.name)
+    log.debug("Checking ping for %s", server.name)
     avail = get_availability(server)
     if avail is None:
         return
@@ -104,7 +104,7 @@ def check_ping(server):
 def check_region_pings(pool, region):
     """Check pings for all servers in a given region"""
     cs = pyrax.connect_to_cloudservers(region=region)
-    log.info("Checking pings for %s", region)
+    log.debug("Checking pings for %s", region)
     servers = cs.servers.findall()
     log.debug("%3i servers in Region %s", len(servers), region)
     list(pool.map(check_ping, servers))
@@ -117,14 +117,14 @@ def main(interval=300, threads=10):
         tosleep = interval / len(regions)
         for region in regions:
             check_region_pings(pool, region)
-            log.info("Sleeping for %i seconds", tosleep)
+            log.debug("Sleeping for %i seconds", tosleep)
             time.sleep(tosleep)
 
 
 if __name__ == '__main__':
     import argparse
 
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
     formatter = logging.Formatter('[%(levelname).1s %(name)s] %(message)s')
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
